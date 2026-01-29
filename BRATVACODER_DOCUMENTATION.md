@@ -83,9 +83,19 @@
 
 ---
 
+## Status das Funcionalidades
+
+### Legenda de Status
+- ✅ **Operacional** - Código implementado, rota disponível, UI funcional
+- ⚠️ **Implementado** - Código existe mas pode requerer API key ou configuração
+- 🔧 **Parcial** - Funcionalidade básica pronta, recursos avançados pendentes
+- ❌ **Não Implementado** - Requer desenvolvimento
+
+---
+
 ## Funcionalidades Implementadas
 
-### ✅ Funcionalidades Completas (50+ Serviços)
+### ✅ Funcionalidades Operacionais (50+ Serviços)
 
 #### 1. Chat com IA (Agente Conversacional)
 - **Arquivo:** `server/chatService.ts`
@@ -413,6 +423,45 @@ docker run --name bratvacoder-db \
 ```
 
 URL: `postgresql://postgres:mysecretpassword@localhost:5432/bratvacoder`
+
+**Opção C: SQLite Local (Armazenamento Interno - EXPERIMENTAL)**
+
+Para rodar 100% offline sem PostgreSQL, você pode modificar para usar SQLite:
+
+1. Instale o pacote SQLite:
+```bash
+npm install better-sqlite3 drizzle-orm/better-sqlite3
+```
+
+2. Crie um arquivo `server/db-sqlite.ts`:
+```typescript
+import Database from 'better-sqlite3';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+
+const sqlite = new Database('bratvacoder.db');
+export const db = drizzle(sqlite);
+```
+
+3. Modifique `server/db.ts` para usar SQLite:
+```typescript
+// Troque o import do PostgreSQL pelo SQLite
+import { db } from './db-sqlite';
+export { db };
+```
+
+4. Atualize o schema em `shared/schema.ts` para compatibilidade SQLite:
+- Substitua `serial` por `integer` com autoincrement
+- Substitua `text[]` por JSON string
+
+**Nota:** A opção SQLite é experimental e requer adaptações no schema Drizzle. A maioria das funcionalidades funcionará, mas algumas features como `ARRAY` columns precisam ser convertidas para JSON.
+
+**Opção D: In-Memory Storage (Desenvolvimento Rápido)**
+
+Para testes rápidos sem persistência:
+
+1. Em `server/storage.ts`, use o `MemStorage` padrão
+2. Os dados são armazenados em memória e perdidos ao reiniciar
+3. Útil para desenvolvimento e testes
 
 ### Passo 4: Configure as Variáveis de Ambiente
 
@@ -859,6 +908,30 @@ Para rodar **localmente** como ambiente de desenvolvimento, está praticamente c
 
 ---
 
+## Arquivos no GitHub
+
+### O que está incluído no repositório:
+- ✅ Todo o código fonte (TypeScript, JavaScript)
+- ✅ Configurações (package.json, tsconfig, vite, tailwind)
+- ✅ Componentes UI (React, Shadcn)
+- ✅ Serviços backend (Express, APIs)
+- ✅ Schema do banco (Drizzle)
+- ✅ Templates de projetos
+- ✅ Documentação (MD files)
+- ✅ Assets de branding (JSON)
+
+### O que NÃO está no repositório:
+- ❌ `node_modules/` - Dependências (instalar com `npm install`)
+- ❌ `workspaces/` - Projetos de usuários (dados sensíveis)
+- ❌ `.env` - Variáveis de ambiente (configurar manualmente)
+- ❌ `dist/` - Build compilado (gerar com `npm run build`)
+- ❌ Arquivos binários grandes (imagens, vídeos)
+- ❌ Cache temporário (`.cache/`, `.upm/`)
+
+**Total de arquivos no repositório:** 236 arquivos de código
+
+---
+
 ## Suporte
 
 - **Repositório:** https://github.com/jmonkeyzapbratva/Bratvacodertest
@@ -867,3 +940,4 @@ Para rodar **localmente** como ambiente de desenvolvimento, está praticamente c
 ---
 
 *Documentação gerada em Janeiro de 2026*
+*Última atualização: Correções de armazenamento local e status de funcionalidades*
